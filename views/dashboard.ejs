@@ -1,1 +1,555 @@
-<h1>Dashboard</h1>
+<% layout('/layouts/boilerplate') %>
+
+<div class="max-w-7xl mx-auto px-6 py-10 space-y-12">
+
+  <!-- ══════════════════════════════════════════════════════
+       SECTION 1 — Welcome header + stats strip
+  ══════════════════════════════════════════════════════ -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+
+    <!-- Greeting -->
+    <div class="flex items-center gap-4">
+      <img
+        src="<%= user.avatarUrl %>"
+        alt="<%= user.username %>"
+        class="w-14 h-14 rounded-full object-cover ring-2 ring-accent/10 shadow-sm"
+      />
+      <div>
+        <h1 class="font-jakarta text-2xl font-bold text-slate-900 dark:text-white leading-tight">
+          <%
+            const hour = new Date().getHours();
+            const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+          %>
+          <%= greeting %>, <%= user.username %>
+        </h1>
+        <p class="text-sm text-slate-500 dark:text-slate-400 mt-0.5 font-medium">
+          What are we doing today?
+        </p>
+      </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="flex items-center gap-3">
+      <div class="text-center px-6 py-3.5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 shadow-sm">
+        <p class="font-jakarta text-xl font-bold text-accent"><%= stats.savedCount %></p>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-medium uppercase tracking-wide">Saved</p>
+      </div>
+      <div class="text-center px-6 py-3.5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 shadow-sm">
+        <p class="font-jakarta text-xl font-bold text-accent"><%= stats.searchCount %></p>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-medium uppercase tracking-wide">Searches</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════
+       SECTION 2 — AI Search Form
+  ══════════════════════════════════════════════════════ -->
+  <div class="bg-white dark:bg-slate-800 rounded-3xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
+
+    <!-- Card header -->
+    <div class="px-7 pt-7 pb-5 border-b border-slate-100 dark:border-slate-700">
+      <div class="flex items-center gap-3">
+        <span class="w-10 h-10 rounded-full bg-accent/10 text-accent flex items-center justify-center">
+          <i data-lucide="sparkles" class="w-5 h-5"></i>
+        </span>
+        <div>
+          <h2 class="font-jakarta text-lg font-bold text-slate-900 dark:text-white">Find Something To Do</h2>
+          <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Powered by Gemini AI</p>
+        </div>
+      </div>
+    </div>
+
+    <form id="ai-search-form" method="POST" action="/activity/recommend" class="px-7 py-6 space-y-6">
+
+      <!-- Natural Language Input -->
+      <div>
+        <label for="prompt" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
+          Just tell us what you want
+        </label>
+        <div class="flex gap-3">
+          <div class="relative flex-1">
+            <input
+              id="prompt"
+              name="prompt"
+              type="text"
+              placeholder='e.g. "I have 2 hours and ₹500, feeling bored in Mumbai"'
+              class="w-full pl-5 pr-4 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-600
+                     bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white
+                     placeholder:text-slate-400 text-sm
+                     focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent
+                     transition-all duration-200"
+            />
+          </div>
+          <button type="submit" id="search-btn"
+            class="flex-shrink-0 flex items-center gap-2 px-6 py-3.5 rounded-2xl
+                   bg-accent hover:bg-accent-hover text-white text-sm font-bold
+                   shadow-sm transition-all duration-200">
+            <i data-lucide="search" class="w-4 h-4"></i>
+            <span>Find Ideas</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div class="relative flex items-center gap-3">
+        <div class="flex-1 border-t border-slate-100 dark:border-slate-700"></div>
+        <span class="text-xs text-slate-400 dark:text-slate-500 font-medium uppercase tracking-wider px-1">Or Fine-tune</span>
+        <div class="flex-1 border-t border-slate-100 dark:border-slate-700"></div>
+      </div>
+
+      <!-- Structured Filters Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <!-- Mood -->
+        <div>
+          <label for="mood" class="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-3">Mood</label>
+          <div class="flex flex-wrap gap-2">
+            <% const moods = [
+              {val:'happy',      icon:'smile'},
+              {val:'bored',      icon:'meh'},
+              {val:'stressed',   icon:'frown'},
+              {val:'adventurous',icon:'rocket'},
+              {val:'social',     icon:'users'},
+              {val:'solo',       icon:'user'},
+            ]; %>
+            <% moods.forEach(m => { %>
+              <label class="mood-chip cursor-pointer">
+                <input type="radio" name="mood" value="<%= m.val %>"
+                  <%= (prefill.mood === m.val) ? 'checked' : '' %>
+                  class="sr-only peer" />
+                <span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold
+                             bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600
+                             text-slate-600 dark:text-slate-300 shadow-sm
+                             peer-checked:bg-accent peer-checked:text-white peer-checked:border-accent
+                             hover:border-accent hover:text-accent transition-all duration-150 select-none">
+                  <i data-lucide="<%= m.icon %>" class="w-3.5 h-3.5"></i> 
+                  <%= m.val.charAt(0).toUpperCase() + m.val.slice(1) %>
+                </span>
+              </label>
+            <% }) %>
+          </div>
+          <input type="hidden" id="mood-hidden" name="mood_fallback" value="" />
+        </div>
+
+        <!-- Available Time -->
+        <div>
+          <label for="time" class="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-3">Available Time</label>
+          <select id="time" name="time"
+            class="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-600
+                   bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white text-sm font-medium
+                   focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all">
+            <option value="">Any duration</option>
+            <option value="15-30 minutes">15–30 minutes</option>
+            <option value="1 hour">About 1 hour</option>
+            <option value="2 hours">About 2 hours</option>
+            <option value="half day">Half day (3–4 hours)</option>
+            <option value="full day">Full day</option>
+          </select>
+        </div>
+
+        <!-- Location Type -->
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-3">Setting</label>
+          <div class="grid grid-cols-2 gap-2">
+            <% const settings = [
+              {val:'indoor',  icon:'home'},
+              {val:'outdoor', icon:'tree-pine'},
+              {val:'online',  icon:'laptop'},
+              {val:'both',    icon:'infinity'},
+            ]; %>
+            <% settings.forEach(s => { %>
+              <label class="cursor-pointer">
+                <input type="radio" name="locationType" value="<%= s.val %>" class="sr-only peer" />
+                <span class="flex items-center justify-center gap-2 px-3 py-2.5 rounded-2xl text-xs font-semibold
+                             bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600
+                             text-slate-600 dark:text-slate-300 shadow-sm
+                             peer-checked:bg-accent/10 peer-checked:text-accent peer-checked:border-accent
+                             hover:border-accent hover:text-accent transition-all duration-150 select-none">
+                  <i data-lucide="<%= s.icon %>" class="w-4 h-4"></i> 
+                  <%= s.val.charAt(0).toUpperCase() + s.val.slice(1) %>
+                </span>
+              </label>
+            <% }) %>
+          </div>
+        </div>
+
+        <!-- Budget Slider -->
+        <div>
+          <label for="budget" class="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-3">
+            Max Budget — <span class="text-accent font-bold">₹<span id="budget-val"><%= prefill.budget %></span></span>
+          </label>
+          <input
+            id="budget" name="budget" type="range"
+            min="0" max="5000" step="50"
+            value="<%= prefill.budget %>"
+            oninput="document.getElementById('budget-val').textContent = this.value"
+            class="w-full accent-indigo-500"
+          />
+          <div class="flex justify-between text-xs text-slate-400 mt-1 font-medium">
+            <span>Free</span><span>₹5,000</span>
+          </div>
+        </div>
+
+        <!-- Location -->
+        <div>
+          <label for="location" class="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-3">City / Area</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-3 flex items-center text-slate-400 pointer-events-none">
+              <i data-lucide="map-pin" class="w-4 h-4"></i>
+            </span>
+            <input
+              id="location" name="location" type="text"
+              placeholder='e.g. Mumbai, Bandra'
+              value="<%= prefill.location %>"
+              class="w-full pl-10 pr-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-600
+                     bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white
+                     placeholder:text-slate-400 text-sm font-medium
+                     focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all"
+            />
+          </div>
+        </div>
+
+        <!-- Interests -->
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-3">Interests</label>
+          <div class="flex flex-wrap gap-2">
+            <% const interestList = [
+              {val:'music',     icon:'music'},
+              {val:'creative',  icon:'palette'},
+              {val:'fitness',   icon:'activity'},
+              {val:'reading',   icon:'book-open'},
+              {val:'gaming',    icon:'gamepad-2'},
+              {val:'cooking',   icon:'utensils'},
+              {val:'travel',    icon:'plane'},
+              {val:'movies',    icon:'film'},
+            ]; %>
+            <% interestList.forEach(i => { %>
+              <label class="cursor-pointer">
+                <input type="checkbox" name="interests" value="<%= i.val %>"
+                  <%= (prefill.interests && prefill.interests.includes(i.val)) ? 'checked' : '' %>
+                  class="sr-only peer" />
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold
+                             bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600
+                             text-slate-600 dark:text-slate-300 shadow-sm
+                             peer-checked:bg-accent/10 peer-checked:text-accent peer-checked:border-accent
+                             hover:border-accent hover:text-accent transition-all duration-150 select-none">
+                  <i data-lucide="<%= i.icon %>" class="w-3.5 h-3.5"></i> 
+                  <%= i.val.charAt(0).toUpperCase() + i.val.slice(1) %>
+                </span>
+              </label>
+            <% }) %>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Submit bar -->
+      <div class="flex items-center gap-4 pt-4 border-t border-slate-100 dark:border-slate-700">
+        <button type="submit" id="full-search-btn"
+          class="flex items-center gap-2 px-6 py-3 rounded-full
+                 bg-slate-900 dark:bg-white hover:bg-slate-800 dark:hover:bg-slate-100 
+                 text-white dark:text-slate-900 text-sm font-bold shadow-sm transition-all duration-200">
+          <i data-lucide="sparkles" class="w-4 h-4"></i> Get Recommendations
+        </button>
+        <button type="reset" onclick="resetForm()"
+          class="text-sm font-medium text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
+          Clear all
+        </button>
+        <% if (searchHistory.length > 0) { %>
+          <a href="/activity/results"
+             class="ml-auto text-sm font-semibold text-accent hover:underline flex items-center gap-1">
+            View last results <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </a>
+        <% } %>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════
+       SECTION 3 — Recent Search History
+  ══════════════════════════════════════════════════════ -->
+  <% if (searchHistory.length > 0) { %>
+  <div>
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="font-jakarta text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+        <i data-lucide="clock" class="w-5 h-5 text-slate-500"></i> Recent Searches
+      </h2>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      <% searchHistory.forEach(h => {
+        const p = h.searchParams || {};
+        const label = p.prompt
+          ? p.prompt.slice(0, 60) + (p.prompt.length > 60 ? '…' : '')
+          : [p.mood, p.availableTime, p.budget ? `₹${p.budget}` : '', p.location].filter(Boolean).join(' · ') || 'Open search';
+      %>
+      <button
+        class="history-chip group text-left p-5 rounded-3xl
+               bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700
+               shadow-sm hover:shadow-md hover:border-slate-300 transition-all duration-200"
+        data-prompt="<%= encodeURIComponent(p.prompt || '') %>"
+        data-mood="<%= p.mood || '' %>"
+        data-time="<%= p.availableTime || '' %>"
+        data-budget="<%= p.budget || '' %>"
+        data-location="<%= p.location || '' %>"
+        onclick="rerunSearch(this)"
+      >
+        <div class="flex items-start justify-between gap-3">
+          <p class="text-sm font-semibold text-slate-700 dark:text-slate-300 group-hover:text-accent transition-colors line-clamp-2">
+            <%= label %>
+          </p>
+          <i data-lucide="arrow-up-right" class="w-4 h-4 text-slate-300 dark:text-slate-600 group-hover:text-accent transition-colors flex-shrink-0 mt-0.5"></i>
+        </div>
+        <div class="flex items-center gap-2 mt-3 flex-wrap">
+          <% if (p.mood) { %><span class="text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 px-2.5 py-1 rounded-md"><%= p.mood %></span><% } %>
+          <% if (p.availableTime) { %><span class="text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 px-2.5 py-1 rounded-md"><%= p.availableTime %></span><% } %>
+          <% if (p.budget) { %><span class="text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 px-2.5 py-1 rounded-md">₹<%= p.budget %></span><% } %>
+          <span class="text-xs font-medium text-slate-400 dark:text-slate-500 ml-auto">
+            <%= new Date(h.searchedAt).toLocaleDateString('en-IN', { day:'numeric', month:'short' }) %>
+          </span>
+        </div>
+      </button>
+      <% }) %>
+    </div>
+  </div>
+  <% } %>
+
+  <!-- ══════════════════════════════════════════════════════
+       SECTION 4 — Saved Activities
+  ══════════════════════════════════════════════════════ -->
+  <div>
+
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="font-jakarta text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+        <i data-lucide="heart" class="w-5 h-5 text-rose-500"></i> Saved Activities
+        <% if (savedActivities.length > 0) { %>
+          <span class="px-2.5 py-0.5 text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-full border border-slate-200 dark:border-slate-700">
+            <%= savedActivities.length %>
+          </span>
+        <% } %>
+      </h2>
+      <% if (savedActivities.length > 0) { %>
+        <a href="/saved" class="text-sm font-semibold text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white flex items-center gap-1 transition-colors">
+          See all <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </a>
+      <% } %>
+    </div>
+
+    <% if (savedActivities.length === 0) { %>
+      <!-- Empty state -->
+      <div class="flex flex-col items-center justify-center py-20 text-center
+                  rounded-3xl border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30">
+        <div class="w-16 h-16 rounded-2xl bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700 flex items-center justify-center mb-5 text-slate-400">
+          <i data-lucide="bookmark" class="w-8 h-8"></i>
+        </div>
+        <h3 class="font-jakarta text-lg font-bold text-slate-900 dark:text-white mb-2">No saved activities yet</h3>
+        <p class="text-sm text-slate-500 dark:text-slate-400 mb-6 max-w-xs font-medium">
+          Ask the AI for recommendations above, then save the ones you love.
+        </p>
+        <button onclick="document.getElementById('prompt').focus()"
+          class="px-6 py-3 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-sm font-bold shadow-sm transition-all hover:-translate-y-0.5">
+          Get My First Recommendation
+        </button>
+      </div>
+
+    <% } else { %>
+      <!-- Saved activity cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <%
+          const catIcon = {
+            "Creative":"palette","Outdoor":"mountain","Gaming":"gamepad-2","Fitness":"activity",
+            "Music":"music","Reading":"book-open","Travel":"plane","Food & Cooking":"utensils",
+            "Movies & Shows":"film","Social":"users","Mindfulness":"wind",
+            "Learning":"graduation-cap","DIY & Crafts":"wrench","Photography":"camera","General":"sparkles"
+          };
+        %>
+        <% savedActivities.slice(0, 8).forEach((activity) => {
+          const icon = catIcon[activity.category] || 'star';
+        %>
+
+        <div class="group relative rounded-3xl overflow-hidden bg-white dark:bg-slate-800
+                    shadow-sm hover:shadow-md border border-slate-200 dark:border-slate-700
+                    hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
+
+          <!-- Card Header / Icon Area -->
+          <div class="p-6 pb-4">
+            <div class="flex items-center justify-between mb-4">
+              <div class="w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-900/50 flex items-center justify-center text-slate-600 dark:text-slate-300 border border-slate-100 dark:border-slate-700">
+                <i data-lucide="<%= icon %>" class="w-6 h-6"></i>
+              </div>
+              <button
+                class="remove-btn w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-red-100 dark:hover:bg-red-900/40 text-slate-400 hover:text-red-500 transition-colors flex items-center justify-center"
+                aria-label="Remove from saved"
+                data-id="<%= activity._id %>"
+                data-title="<%= activity.title %>"
+              >
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            </div>
+            <span class="inline-block px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider mb-3">
+              <%= activity.category %>
+            </span>
+            <h3 class="font-jakarta text-lg font-bold text-slate-900 dark:text-white line-clamp-2 leading-tight">
+              <%= activity.title %>
+            </h3>
+          </div>
+
+          <!-- Card body -->
+          <div class="px-6 pb-6 mt-auto">
+            <p class="text-sm text-slate-500 dark:text-slate-400 line-clamp-2 mb-4">
+              <%= activity.description %>
+            </p>
+            <div class="flex items-center gap-3">
+              <div class="flex items-center gap-1.5 text-slate-500 dark:text-slate-400 text-xs font-medium">
+                <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+                <%= activity.estimatedTime || 'Varies' %>
+              </div>
+              <div class="flex items-center gap-1.5 <%= (activity.estimatedCost || '').toLowerCase() === 'free' ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400' %> text-xs font-medium">
+                <i data-lucide="coins" class="w-3.5 h-3.5"></i>
+                <%= activity.estimatedCost || 'Free' %>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <% }) %>
+
+        <!-- "See all" card if more than 8 -->
+        <% if (savedActivities.length > 8) { %>
+        <a href="/saved"
+           class="rounded-3xl border border-dashed border-slate-300 dark:border-slate-700
+                  flex flex-col items-center justify-center text-center p-6
+                  hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all duration-200 group min-h-[250px]">
+          <div class="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+            <i data-lucide="folder-open" class="w-5 h-5 text-slate-500"></i>
+          </div>
+          <p class="font-jakarta font-bold text-slate-900 dark:text-white">
+            +<%= savedActivities.length - 8 %> more
+          </p>
+          <p class="text-sm text-slate-500 mt-1 font-medium group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
+            View all saved <i data-lucide="arrow-right" class="w-3 h-3 inline"></i>
+          </p>
+        </a>
+        <% } %>
+
+      </div>
+    <% } %>
+
+  </div>
+
+</div>
+
+<!-- ── Remove confirmation toast ─────────────────────────────── -->
+<div id="remove-toast" class="fixed bottom-6 right-6 z-50 hidden
+     flex items-center gap-3 px-5 py-4 rounded-2xl shadow-xl
+     bg-slate-900 dark:bg-slate-800 border border-slate-700
+     text-sm font-medium text-white">
+  <i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-400"></i>
+  <span id="remove-toast-msg">Removed from favourites.</span>
+</div>
+
+<!-- ── JavaScript ─────────────────────────────────────────────── -->
+<script>
+// ── Search form loading state ─────────────────────────────────
+document.getElementById('ai-search-form').addEventListener('submit', function (e) {
+  ['search-btn', 'full-search-btn'].forEach(id => {
+    const btn = document.getElementById(id);
+    if (btn) {
+      btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Thinking…';
+      btn.disabled = true;
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
+  });
+});
+
+// ── Re-run a past search ──────────────────────────────────────
+function rerunSearch(btn) {
+  const prompt   = decodeURIComponent(btn.dataset.prompt || '');
+  const mood     = btn.dataset.mood     || '';
+  const time     = btn.dataset.time     || '';
+  const budget   = btn.dataset.budget   || '';
+  const location = btn.dataset.location || '';
+
+  if (prompt) {
+    document.getElementById('prompt').value = prompt;
+  }
+  if (mood) {
+    const radio = document.querySelector(`input[name="mood"][value="${mood}"]`);
+    if (radio) radio.checked = true;
+  }
+  if (time) {
+    const select = document.getElementById('time');
+    if (select) select.value = time;
+  }
+  if (budget) {
+    const slider = document.getElementById('budget');
+    if (slider) {
+      slider.value = budget;
+      document.getElementById('budget-val').textContent = budget;
+    }
+  }
+  if (location) {
+    document.getElementById('location').value = location;
+  }
+
+  document.getElementById('prompt').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  document.getElementById('prompt').focus();
+}
+
+// ── Reset form ────────────────────────────────────────────────
+function resetForm() {
+  document.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach(el => el.checked = false);
+  document.getElementById('budget').value = 500;
+  document.getElementById('budget-val').textContent = '500';
+  document.getElementById('location').value = '';
+  document.getElementById('prompt').value = '';
+}
+
+// ── Remove saved activity ─────────────────────────────────────
+document.querySelectorAll('.remove-btn').forEach(btn => {
+  btn.addEventListener('click', async function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    const id    = this.dataset.id;
+    const title = this.dataset.title;
+    const card  = this.closest('.group');
+
+    if (!confirm(`Remove "${title}" from your saved activities?`)) return;
+
+    try {
+      const res = await fetch(`/activity/${id}`, {
+        method : 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        // Animate card removal
+        card.style.opacity    = '0';
+        card.style.transform  = 'scale(0.95)';
+        card.style.transition = 'opacity 0.3s, transform 0.3s';
+        setTimeout(() => card.remove(), 300);
+
+        showRemoveToast(`"${title}" removed.`);
+
+        // Update saved count (if we had a specific target, omitted here for brevity)
+      } else {
+        alert(data.message || 'Could not remove activity.');
+      }
+    } catch (err) {
+      alert('Network error. Please try again.');
+    }
+  });
+});
+
+function showRemoveToast(msg) {
+  const toast = document.getElementById('remove-toast');
+  document.getElementById('remove-toast-msg').textContent = msg;
+  toast.classList.remove('hidden');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => toast.classList.add('hidden'), 3000);
+}
+</script>

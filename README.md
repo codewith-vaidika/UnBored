@@ -1,34 +1,89 @@
-UnBored AI 🎯
+# ✨ UnBored
 
-Never wonder what to do next. UnBored AI looks at your mood, free time, budget, and the weather outside, then suggests something actually worth doing — powered by AI, not a static list of "50 things to do when bored."
+**Stop Scrolling. Start Living.**
 
-What it does
+UnBored is an AI-powered personalized activity recommendation platform. Feeling bored? Tell us your mood, your budget, how much time you have, and your location. UnBored's Gemini AI engine will instantly craft the perfect, personalized activity so you can get off the couch and do something amazing.
 
+---
 
-Sign up and tell it your interests
-Pick your mood, how much time you've got, and your budget
-Get AI-generated activity suggestions, tailored to you
-Save the ones you like and revisit them anytime
-Chat with the AI assistant when you just want to talk it through
+## 🚀 Features
 
+- **AI Recommendations**: Powered by Google's cutting-edge Gemini 2.5 AI to generate highly contextual, creative activity ideas.
+- **Vibe Checks**: Quick filter pills (Trending, Chill, Active, Creative) to instantly fetch ideas based on your current energy.
+- **Personalized Dashboard**: A central hub featuring a time-based greeting, lifetime search/save stats, and your recent search history.
+- **Saved Canvas**: A beautiful, masonry-style grid to save and organize your favorite AI recommendations.
+- **Premium UI/UX**: Designed with a clean, high-end aesthetic inspired by Notion and Airbnb. Features Plus Jakarta Sans typography, Lucide SVG icons, soft shadows, and a fully responsive layout.
+- **Authentication**: Secure user signup and login handled via Passport.js.
+- **Avatar Uploads**: Users can upload custom profile pictures securely stored via Cloudinary.
 
-Built with
+---
 
-React · Node.js · Express · EJS · MongoDB · Gemini/OpenAI API
+## 🛠️ Tech Stack
 
-Running it locally
+- **Backend**: Node.js, Express.js
+- **Database**: MongoDB & Mongoose
+- **AI Integration**: Google Generative AI SDK (`gemini-2.5-flash`)
+- **Frontend**: EJS (Embedded JavaScript), Tailwind CSS, Vanilla JS
+- **Authentication**: Passport.js (Local Strategy), express-session
+- **Image Storage**: Cloudinary (via Multer)
 
-bashgit clone https://github.com/<your-username>/unbored-ai.git
-cd unbored-ai
+---
+
+## ⚙️ Local Setup & Installation
+
+### 1. Clone the repository
+```bash
+git clone https://github.com/YOUR_USERNAME/unbored.git
+cd unbored
+```
+
+### 2. Install dependencies
+```bash
 npm install
-cp .env.example .env   # add your Mongo URI, session secret, and AI key
+```
+
+### 3. Environment Variables
+Create a `.env` file in the root directory and add your credentials. **Note:** `.env` is included in `.gitignore` and should never be committed to version control.
+
+```env
+# Server Port
+PORT=3000
+
+# MongoDB URI (Local or Atlas)
+MONGO_URI=mongodb://127.0.0.1:27017/unbored
+
+# Express Session Secret
+SESSION_SECRET=your_super_secret_session_key
+
+# Google Gemini API Key (Get from Google AI Studio)
+GEMINI_API_KEY=your_gemini_api_key_here
+
+# Cloudinary Credentials (For image uploads)
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+```
+
+### 4. Start the application
+For development (with auto-reload):
+```bash
 npm run dev
+```
+For production:
+```bash
+npm start
+```
 
-Then open http://localhost:3000.
+Visit `http://localhost:3000` in your browser.
 
-What's next
+---
 
-Group activity planning, streaks, calendar sync, and a bit of gamification are on the roadmap — this is a project that's still growing.
+## 📸 Screenshots
 
+*(Add screenshots of your stunning homepage, dashboard, and AI recommendation results here!)*
 
-Built as a portfolio project to dig into real AI integration, not just another CRUD app
+---
+
+## 📝 License
+
+This project is licensed under the MIT License.

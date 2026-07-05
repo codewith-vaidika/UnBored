@@ -1,0 +1,7 @@
+<% layout('/layouts/boilerplate') %>
+<div class="error-page">
+  <div class="error-code"><%= statusCode || 500 %></div>
+  <h1>Something Went Wrong</h1>
+  <p><%= message || "An unexpected error occurred." %></p>
+  <a href="/" class="primary-btn">← Back to Home</a>
+</div>

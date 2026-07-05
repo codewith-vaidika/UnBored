@@ -1,130 +1,228 @@
-<% layout("layouts/boilerplate") %>
+<% layout('/layouts/boilerplate') %>
 
-<section class="hero">
+<%# ═══════════════════════════════════════════════════════════
+    HOME PAGE
+    Premium landing page with a background image slider, 
+    massive typography (Jakarta), glassmorphism, and minimal UI.
+════════════════════════════════════════════════════════════ %>
 
-<div class="hero-content">
+<!-- ── HERO SECTION ──────────────────────────────────────── -->
+<section class="relative min-h-[90vh] flex items-center justify-center pt-20 pb-32 overflow-hidden">
+  
+  <!-- Crossfade Background Slider -->
+  <div id="hero-slider" class="absolute inset-0 z-0 bg-slate-900">
+    <!-- Images will be injected here by JS -->
+  </div>
+  
+  <!-- Dark overlay to ensure text legibility -->
+  <div class="absolute inset-0 z-0 bg-black/50"></div>
 
-<h1>What do you feel like doing today?</h1>
+  <div class="max-w-7xl mx-auto px-6 relative z-10 w-full flex flex-col items-center text-center">
+    
+    <!-- Hero Pill -->
+    <div class="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 shadow-sm mb-8 animate-fade-in" style="animation-delay: 0.1s;">
+      <i data-lucide="sparkles" class="w-4 h-4 text-white"></i>
+      <span class="text-xs font-semibold uppercase tracking-widest text-white/90">
+        AI-Powered Recommendations
+      </span>
+    </div>
 
-<p>
-Discover fun things based on your mood, interests and free time.
-</p>
+    <!-- Massive Typography -->
+    <h1 class="font-jakarta text-6xl md:text-7xl lg:text-8xl font-extrabold text-white tracking-tight leading-[1.1] mb-8 max-w-5xl animate-fade-in drop-shadow-lg" style="animation-delay: 0.2s;">
+      Stop Scrolling.<br />
+      <span class="text-white/90">Start Living.</span>
+    </h1>
 
-<div class="search-container">
+    <p class="text-lg md:text-xl text-white/80 mb-12 max-w-2xl font-medium animate-fade-in leading-relaxed drop-shadow-md" style="animation-delay: 0.3s;">
+      Tell us your mood, budget, and time. Our AI instantly crafts the perfect personalized activity so you can get off the couch and do something amazing.
+    </p>
 
-<input
-type="text"
-placeholder="Search activities..."
->
-
-<button>
-
-🔍
-
-</button>
-
-</div>
-
-<div class="categories">
-
-<div class="category">😴 Relax</div>
-
-<div class="category">🎨 Creative</div>
-
-<div class="category">📚 Learn</div>
-
-<div class="category">🎮 Fun</div>
-
-<div class="category">💪 Fitness</div>
-
-<div class="category">✈️ Explore</div>
-
-</div>
-
-</div>
-
+    <!-- Clean CTA Button -->
+    <div class="w-full max-w-md relative group animate-fade-in" style="animation-delay: 0.4s;">
+      <a href="<%= currentUser ? '/dashboard' : '/signup' %>" class="flex items-center justify-center gap-3 w-full px-8 py-5 rounded-full bg-white text-slate-900 font-jakarta font-bold text-lg transition-all duration-300 shadow-xl hover:shadow-2xl hover:-translate-y-1 hover:bg-slate-50">
+        <i data-lucide="compass" class="w-6 h-6"></i>
+        <span>Discover Ideas Now</span>
+      </a>
+    </div>
+    
+  </div>
 </section>
 
-<section class="trending">
+<!-- ── HOW IT WORKS ────────────────────────────────────── -->
+<section class="py-24 bg-white dark:bg-slate-900">
+  <div class="max-w-7xl mx-auto px-6">
+    
+    <div class="text-center max-w-3xl mx-auto mb-20">
+      <h2 class="font-jakarta text-3xl md:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-6">
+        How UnBored Works
+      </h2>
+      <p class="text-lg text-slate-600 dark:text-slate-400">
+        Three simple steps to transform your free time from mindless scrolling into memorable experiences.
+      </p>
+    </div>
 
-<h2>🔥 Trending Today</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
+      <!-- Step 1 -->
+      <div class="relative z-10 flex flex-col items-center text-center group">
+        <div class="w-16 h-16 rounded-2xl bg-slate-50 dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700 flex items-center justify-center text-slate-700 dark:text-slate-300 mb-6 group-hover:-translate-y-1 transition-transform duration-300">
+          <i data-lucide="sliders-horizontal" class="w-8 h-8"></i>
+        </div>
+        <h3 class="font-jakarta text-xl font-bold text-slate-900 dark:text-white mb-3">1. Tell us your vibe</h3>
+        <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+          Select your mood, available time, and budget. Whether you're stressed and broke, or energetic and flush with cash.
+        </p>
+      </div>
 
-<div class="card-grid">
+      <!-- Step 2 -->
+      <div class="relative z-10 flex flex-col items-center text-center group">
+        <div class="w-16 h-16 rounded-2xl bg-slate-900 dark:bg-white shadow-md flex items-center justify-center text-white dark:text-slate-900 mb-6 group-hover:-translate-y-1 transition-transform duration-300">
+          <i data-lucide="cpu" class="w-8 h-8"></i>
+        </div>
+        <h3 class="font-jakarta text-xl font-bold text-slate-900 dark:text-white mb-3">2. AI Works its Magic</h3>
+        <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+          Our Gemini-powered engine instantly cross-references thousands of ideas to find your perfect match.
+        </p>
+      </div>
 
-<div class="card">
+      <!-- Step 3 -->
+      <div class="relative z-10 flex flex-col items-center text-center group">
+        <div class="w-16 h-16 rounded-2xl bg-slate-50 dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700 flex items-center justify-center text-slate-700 dark:text-slate-300 mb-6 group-hover:-translate-y-1 transition-transform duration-300">
+          <i data-lucide="map" class="w-8 h-8"></i>
+        </div>
+        <h3 class="font-jakarta text-xl font-bold text-slate-900 dark:text-white mb-3">3. Start Living</h3>
+        <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+          Pick your favorite, save it for later, and get out there. Goodbye boredom, hello memories.
+        </p>
+      </div>
 
-<div class="card-image">🎬</div>
-
-<h3>Movie Night</h3>
-
-<p>Curated movies to watch.</p>
-
-</div>
-
-<div class="card">
-
-<div class="card-image">☕</div>
-
-<h3>Cafe Hopping</h3>
-
-<p>Discover new cafes.</p>
-
-</div>
-
-<div class="card">
-
-<div class="card-image">🎸</div>
-
-<h3>Learn Guitar</h3>
-
-<p>Start a new hobby.</p>
-
-</div>
-
-<div class="card">
-
-<div class="card-image">📸</div>
-
-<h3>Photography Walk</h3>
-
-<p>Explore your city.</p>
-
-</div>
-
-</div>
-
+    </div>
+  </div>
 </section>
 
-<section class="recommended">
+<!-- ── INSPIRATION (BENTO GRID) ────────────────────────── -->
+<section class="py-24 bg-slate-50 dark:bg-slate-800/50" id="categories">
+  <div class="max-w-7xl mx-auto px-6">
+    
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
+      <div class="max-w-2xl">
+        <h2 class="font-jakarta text-3xl md:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-4">
+          Endless Possibilities.
+        </h2>
+        <p class="text-lg text-slate-600 dark:text-slate-400">
+          From quiet indoor crafts to outdoor adventures, explore ideas across every category imaginable.
+        </p>
+      </div>
+      <a href="<%= currentUser ? '/dashboard' : '/signup' %>" class="inline-flex items-center gap-2 text-slate-900 dark:text-white font-semibold hover:underline transition-colors">
+        Explore all categories <i data-lucide="arrow-right" class="w-4 h-4"></i>
+      </a>
+    </div>
 
-<h2>✨ Recommended For You</h2>
+    <!-- Bento Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-6 h-auto md:h-[600px]">
+      
+      <!-- Large Card (Creative) -->
+      <div class="md:col-span-2 md:row-span-2 relative group rounded-3xl overflow-hidden shadow-sm border border-slate-200/50 dark:border-slate-700/50 min-h-[300px]">
+        <img src="https://images.unsplash.com/photo-1461344577544-4e5dc9487184?q=80&w=800&auto=format&fit=crop" alt="Creative activities" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+        <div class="absolute bottom-0 left-0 p-8 w-full">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="flex items-center gap-1 px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-white text-xs font-semibold">
+              <i data-lucide="palette" class="w-3 h-3"></i> Creative
+            </span>
+          </div>
+          <h3 class="font-jakarta text-3xl font-bold text-white mb-2">Pottery Workshop</h3>
+          <p class="text-slate-200 text-sm max-w-sm">Get your hands dirty and create something beautiful from scratch.</p>
+        </div>
+      </div>
 
-<div class="card-grid">
+      <!-- Medium Top (Outdoor) -->
+      <div class="md:col-span-2 md:row-span-1 relative group rounded-3xl overflow-hidden shadow-sm border border-slate-200/50 dark:border-slate-700/50 min-h-[250px]">
+        <img src="https://images.unsplash.com/photo-1551632811-561732d1e306?q=80&w=800&auto=format&fit=crop" alt="Outdoor activities" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+        <div class="absolute bottom-0 left-0 p-6 w-full">
+          <span class="inline-flex items-center gap-1 px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-white text-xs font-semibold mb-2">
+            <i data-lucide="mountain" class="w-3 h-3"></i> Outdoor
+          </span>
+          <h3 class="font-jakarta text-2xl font-bold text-white mb-1">Sunset Hiking</h3>
+          <p class="text-slate-300 text-sm">Disconnect and reconnect with nature.</p>
+        </div>
+      </div>
 
-<div class="card">
+      <!-- Small Bottom Left (Fitness) -->
+      <div class="md:col-span-1 md:row-span-1 relative group rounded-3xl overflow-hidden shadow-sm border border-slate-200/50 dark:border-slate-700/50 min-h-[250px]">
+        <img src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=400&auto=format&fit=crop" alt="Fitness activities" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+        <div class="absolute bottom-0 left-0 p-6 w-full">
+          <span class="inline-flex items-center gap-1 px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-white text-xs font-semibold mb-2">
+            <i data-lucide="activity" class="w-3 h-3"></i> Mindfulness
+          </span>
+          <h3 class="font-jakarta text-xl font-bold text-white">Morning Yoga</h3>
+        </div>
+      </div>
 
-<h3>30 Minute Workout</h3>
+      <!-- Small Bottom Right (Food) -->
+      <div class="md:col-span-1 md:row-span-1 relative group rounded-3xl overflow-hidden shadow-sm border border-slate-200/50 dark:border-slate-700/50 min-h-[250px]">
+        <img src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?q=80&w=400&auto=format&fit=crop" alt="Food activities" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+        <div class="absolute bottom-0 left-0 p-6 w-full">
+          <span class="inline-flex items-center gap-1 px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-white text-xs font-semibold mb-2">
+            <i data-lucide="utensils" class="w-3 h-3"></i> Food
+          </span>
+          <h3 class="font-jakarta text-xl font-bold text-white">Bake Sourdough</h3>
+        </div>
+      </div>
 
-</div>
-
-<div class="card">
-
-<h3>Read A Book</h3>
-
-</div>
-
-<div class="card">
-
-<h3>Try Cooking</h3>
-
-</div>
-
-<div class="card">
-
-<h3>Watch A Documentary</h3>
-
-</div>
-
-</div>
-
+    </div>
+  </div>
 </section>
+
+<!-- ── FINAL CTA ───────────────────────────────────────── -->
+<section class="py-32 relative overflow-hidden bg-slate-900">
+  <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=1600&auto=format&fit=crop')] opacity-20 bg-cover bg-center mix-blend-overlay"></div>
+  <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent"></div>
+
+  <div class="relative z-10 max-w-4xl mx-auto px-6 text-center">
+    <h2 class="font-jakarta text-4xl md:text-6xl font-extrabold text-white tracking-tight mb-8">
+      Ready to cure your boredom?
+    </h2>
+    <p class="text-xl text-slate-300 mb-12 max-w-2xl mx-auto">
+      Join today and let AI find your next favorite hobby, adventure, or relaxing evening at home.
+    </p>
+    <a href="<%= currentUser ? '/dashboard' : '/signup' %>" class="inline-flex items-center justify-center gap-3 px-10 py-5 rounded-full bg-white text-slate-900 font-jakarta font-bold text-lg transition-all duration-300 shadow-xl hover:shadow-2xl hover:-translate-y-1">
+      <span><%= currentUser ? 'Go to Dashboard' : 'Get Started for Free' %></span>
+      <i data-lucide="arrow-right" class="w-5 h-5"></i>
+    </a>
+  </div>
+</section>
+
+<!-- ── HERO SLIDER SCRIPT ──────────────────────────────── -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const images = [
+      'https://images.unsplash.com/photo-1498654896293-37aacf113fd9?q=80&w=1600&auto=format&fit=crop', // Cozy cafe / food
+      'https://images.unsplash.com/photo-1469474968028-56623f02e42e?q=80&w=1600&auto=format&fit=crop', // Hiking / outdoor
+      'https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=1600&auto=format&fit=crop'  // Gaming / indoor
+    ];
+    
+    const slider = document.getElementById('hero-slider');
+    
+    // Create image elements
+    images.forEach((src, idx) => {
+      const img = document.createElement('div');
+      img.className = 'absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ease-in-out';
+      img.style.backgroundImage = `url('${src}')`;
+      img.style.opacity = idx === 0 ? '1' : '0';
+      slider.appendChild(img);
+    });
+
+    const slides = slider.children;
+    let current = 0;
+
+    // Crossfade every 5 seconds
+    setInterval(() => {
+      slides[current].style.opacity = '0';
+      current = (current + 1) % slides.length;
+      slides[current].style.opacity = '1';
+    }, 5000);
+  });
+</script>

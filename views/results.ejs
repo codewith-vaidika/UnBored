@@ -1,0 +1,225 @@
+<% layout('/layouts/boilerplate') %>
+
+<%# ═══════════════════════════════════════════════════════════
+    RESULTS PAGE
+    Premium layout mimicking an Airbnb/Notion style aesthetic.
+    Uses Lucide icons, soft shadows, rounded corners.
+════════════════════════════════════════════════════════════ %>
+
+<div class="max-w-7xl mx-auto px-6 py-10 space-y-10">
+
+  <!-- ── Header & Context ────────────────────────────────────── -->
+  <div class="flex flex-col md:flex-row md:items-start justify-between gap-6">
+    
+    <div>
+      <a href="/dashboard" class="inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 hover:text-slate-800 dark:hover:text-white transition-colors mb-4">
+        <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Dashboard
+      </a>
+      <h1 class="font-jakarta text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-3">
+        Here are your ideas
+      </h1>
+      <p class="text-slate-600 dark:text-slate-400 font-medium">
+        We found <span class="font-bold text-accent"><%= resultCount %></span> personalized recommendations for you.
+      </p>
+    </div>
+
+    <!-- Active Filters Summary -->
+    <div class="flex flex-wrap items-center gap-2 max-w-lg md:justify-end">
+      <% if (searchParams.prompt) { %>
+        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-600 dark:text-slate-300 shadow-sm">
+          <i data-lucide="search" class="w-3.5 h-3.5"></i> "<%= searchParams.prompt %>"
+        </span>
+      <% } %>
+      <% if (searchParams.mood) { %>
+        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-600 dark:text-slate-300 shadow-sm">
+          <i data-lucide="smile" class="w-3.5 h-3.5"></i> <%= searchParams.mood %>
+        </span>
+      <% } %>
+      <% if (searchParams.availableTime) { %>
+        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-600 dark:text-slate-300 shadow-sm">
+          <i data-lucide="clock" class="w-3.5 h-3.5"></i> <%= searchParams.availableTime %>
+        </span>
+      <% } %>
+      <% if (searchParams.budget) { %>
+        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-600 dark:text-slate-300 shadow-sm">
+          <i data-lucide="coins" class="w-3.5 h-3.5"></i> ₹<%= searchParams.budget %>
+        </span>
+      <% } %>
+      <% if (searchParams.location) { %>
+        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-600 dark:text-slate-300 shadow-sm">
+          <i data-lucide="map-pin" class="w-3.5 h-3.5"></i> <%= searchParams.location %>
+        </span>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- ── Results Grid ────────────────────────────────────────── -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <%
+      const catIcon = {
+        "Creative":"palette","Outdoor":"mountain","Gaming":"gamepad-2","Fitness":"activity",
+        "Music":"music","Reading":"book-open","Travel":"plane","Food & Cooking":"utensils",
+        "Movies & Shows":"film","Social":"users","Mindfulness":"wind",
+        "Learning":"graduation-cap","DIY & Crafts":"wrench","Photography":"camera","General":"sparkles"
+      };
+    %>
+    
+    <% activities.forEach((activity, idx) => {
+      const icon = catIcon[activity.category] || 'star';
+    %>
+
+    <div class="group flex flex-col bg-white dark:bg-slate-800 rounded-3xl overflow-hidden shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+      
+      <!-- Top banner area -->
+      <div class="p-6 pb-2">
+        <div class="flex items-start justify-between mb-4">
+          <div class="w-14 h-14 rounded-2xl bg-slate-50 dark:bg-slate-900/50 flex items-center justify-center text-slate-600 dark:text-slate-300 border border-slate-100 dark:border-slate-700">
+            <i data-lucide="<%= icon %>" class="w-7 h-7"></i>
+          </div>
+          
+          <!-- Save Button -->
+          <form class="save-form" method="POST" action="/activity/save">
+            <input type="hidden" name="title" value="<%= activity.title %>" />
+            <input type="hidden" name="category" value="<%= activity.category %>" />
+            <input type="hidden" name="description" value="<%= activity.description %>" />
+            <input type="hidden" name="estimatedTime" value="<%= activity.estimatedTime %>" />
+            <input type="hidden" name="estimatedCost" value="<%= activity.estimatedCost %>" />
+            <input type="hidden" name="minCostINR" value="<%= activity.minCostINR %>" />
+            <input type="hidden" name="maxCostINR" value="<%= activity.maxCostINR %>" />
+            <input type="hidden" name="locationType" value="<%= activity.locationType %>" />
+            <% activity.tags.forEach(tag => { %>
+              <input type="hidden" name="tags[]" value="<%= tag %>" />
+            <% }) %>
+
+            <button type="submit" class="save-btn w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-colors shadow-sm" aria-label="Save Activity">
+              <i data-lucide="heart" class="w-5 h-5"></i>
+            </button>
+          </form>
+        </div>
+
+        <span class="inline-block px-3 py-1 rounded-lg bg-slate-100 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider mb-3">
+          <%= activity.category %>
+        </span>
+
+        <h2 class="font-jakarta text-2xl font-bold text-slate-900 dark:text-white leading-tight mb-3">
+          <%= activity.title %>
+        </h2>
+      </div>
+
+      <!-- Content area -->
+      <div class="px-6 pb-6 flex-1 flex flex-col">
+        <p class="text-slate-600 dark:text-slate-400 leading-relaxed font-medium mb-6 flex-1">
+          <%= activity.description %>
+        </p>
+
+        <!-- Metadata tags -->
+        <div class="flex flex-col gap-3">
+          <div class="flex items-center gap-4 text-sm font-semibold">
+            <div class="flex items-center gap-1.5 text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-700/50 px-3 py-1.5 rounded-lg">
+              <i data-lucide="clock" class="w-4 h-4 text-slate-400"></i>
+              <%= activity.estimatedTime %>
+            </div>
+            <div class="flex items-center gap-1.5 <%= activity.estimatedCost === 'Free' ? 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20' : 'text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-700/50' %> px-3 py-1.5 rounded-lg">
+              <i data-lucide="coins" class="w-4 h-4 <%= activity.estimatedCost === 'Free' ? 'text-emerald-500' : 'text-slate-400' %>"></i>
+              <%= activity.estimatedCost %>
+            </div>
+            <% if (activity.locationTag) { %>
+              <div class="flex items-center gap-1.5 text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-700/50 px-3 py-1.5 rounded-lg ml-auto">
+                <i data-lucide="map-pin" class="w-4 h-4 text-slate-400"></i>
+                <%= activity.locationTag %>
+              </div>
+            <% } %>
+          </div>
+
+          <!-- Tags -->
+          <% if (activity.tags && activity.tags.length > 0) { %>
+            <div class="flex flex-wrap gap-2 pt-3 border-t border-slate-100 dark:border-slate-700/50 mt-1">
+              <% activity.tags.slice(0, 3).forEach(tag => { %>
+                <span class="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wide">#<%= tag %></span>
+              <% }) %>
+            </div>
+          <% } %>
+        </div>
+      </div>
+
+    </div>
+    <% }) %>
+  </div>
+</div>
+
+<!-- ── Save toast notification ───────────────────────────────── -->
+<div id="save-toast" class="fixed bottom-6 right-6 z-50 hidden
+     flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl
+     bg-slate-900 dark:bg-slate-800 border border-slate-700
+     text-sm font-bold text-white">
+  <i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-400"></i>
+  <span id="save-toast-msg"></span>
+</div>
+
+<script>
+// ── AJAX Save Form Logic ──────────────────────────────────────
+document.querySelectorAll('.save-form').forEach(form => {
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    
+    // Check if user is logged in
+    const isLoggedIn = <%= !!currentUser %>;
+    if (!isLoggedIn) {
+      window.location.href = '/login';
+      return;
+    }
+
+    const btn = this.querySelector('.save-btn');
+    const icon = btn.querySelector('i');
+    
+    // Disable temporarily
+    btn.disabled = true;
+    
+    try {
+      const formData = new FormData(this);
+      const data = Object.fromEntries(formData.entries());
+      
+      // Handle array data for tags
+      data.tags = formData.getAll('tags[]');
+
+      const res = await fetch(this.action, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+
+      const result = await res.json();
+
+      if (res.ok && result.success) {
+        // Transform button to saved state
+        btn.classList.remove('text-slate-400', 'bg-slate-100', 'hover:text-rose-500');
+        btn.classList.add('text-rose-500', 'bg-rose-50', 'dark:bg-rose-900/30');
+        
+        // Use Lucide's filled heart using standard tailwind fill class
+        icon.classList.add('fill-current');
+        
+        showToast(result.message);
+      } else {
+        alert(result.message || 'Could not save activity.');
+        btn.disabled = false;
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Network error. Please try again.');
+      btn.disabled = false;
+    }
+  });
+});
+
+function showToast(msg) {
+  const toast = document.getElementById('save-toast');
+  document.getElementById('save-toast-msg').textContent = msg;
+  toast.classList.remove('hidden');
+  
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => toast.classList.add('hidden'), 3500);
+}
+</script>

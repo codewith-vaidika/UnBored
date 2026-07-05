@@ -1,0 +1,136 @@
+<% layout('/layouts/boilerplate') %>
+
+<div class="max-w-3xl mx-auto px-6 py-16">
+
+  <!-- Header -->
+  <div class="flex items-center gap-6 mb-12">
+    <div class="relative">
+      <img
+        src="<%= user.avatarUrl %>"
+        alt="<%= user.username %>'s avatar"
+        class="w-24 h-24 rounded-2xl object-cover ring-4 ring-accent/20"
+      />
+      <span class="absolute -bottom-2 -right-2 bg-white dark:bg-slate-800 rounded-full p-1 shadow text-lg">✨</span>
+    </div>
+    <div>
+      <h1 class="text-2xl font-extrabold text-slate-900 dark:text-white"><%= user.username %></h1>
+      <p class="text-slate-500 dark:text-slate-400 text-sm mt-0.5"><%= user.email %></p>
+      <p class="text-slate-400 dark:text-slate-500 text-xs mt-1">
+        Member since <%= new Date(user.createdAt).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' }) %>
+      </p>
+    </div>
+  </div>
+
+  <!-- Edit Profile Form -->
+  <form method="POST" action="/profile?_method=PUT" enctype="multipart/form-data" class="space-y-6">
+
+    <!-- Bio -->
+    <div>
+      <label for="bio" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Bio</label>
+      <textarea
+        id="bio" name="bio" rows="3" maxlength="200"
+        placeholder="Tell others a bit about yourself..."
+        class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700
+               bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white
+               placeholder:text-slate-400 text-sm resize-none
+               focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all"
+      ><%= user.bio || '' %></textarea>
+    </div>
+
+    <!-- Preferences row -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+
+      <!-- Default location -->
+      <div>
+        <label for="defaultLocation" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Default City</label>
+        <input
+          id="defaultLocation" name="defaultLocation" type="text"
+          placeholder="e.g. Mumbai"
+          value="<%= user.preferences?.defaultLocation || '' %>"
+          class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700
+                 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white
+                 placeholder:text-slate-400 text-sm
+                 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all"
+        />
+      </div>
+
+      <!-- Default budget -->
+      <div>
+        <label for="defaultBudget" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+          Default Budget (₹) — <span id="budget-display"><%= user.preferences?.defaultBudget || 500 %></span>
+        </label>
+        <input
+          id="defaultBudget" name="defaultBudget" type="range"
+          min="0" max="5000" step="50"
+          value="<%= user.preferences?.defaultBudget || 500 %>"
+          oninput="document.getElementById('budget-display').textContent = this.value"
+          class="w-full accent-indigo-500"
+        />
+      </div>
+
+    </div>
+
+    <!-- Default mood -->
+    <div>
+      <label for="defaultMood" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Default Mood</label>
+      <select id="defaultMood" name="defaultMood"
+        class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700
+               bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-sm
+               focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all">
+        <option value="">— None selected —</option>
+        <% ['happy','bored','stressed','adventurous','social','solo'].forEach(m => { %>
+          <option value="<%= m %>" <%= (user.preferences?.defaultMood === m) ? 'selected' : '' %>>
+            <%= m.charAt(0).toUpperCase() + m.slice(1) %>
+          </option>
+        <% }) %>
+      </select>
+    </div>
+
+    <!-- Profile picture update -->
+    <div>
+      <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+        Update Profile Picture <span class="text-slate-400 font-normal">(optional)</span>
+      </label>
+      <label for="profilePicture"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl border-2 border-dashed
+               border-slate-200 dark:border-slate-700 cursor-pointer
+               hover:border-accent hover:bg-accent/5 transition-all duration-200 group">
+        <span class="text-2xl">📸</span>
+        <span id="pic-label" class="text-sm text-slate-500 dark:text-slate-400 group-hover:text-accent transition-colors">
+          Click to choose a new photo
+        </span>
+      </label>
+      <input id="profilePicture" name="profilePicture" type="file"
+             accept="image/jpeg,image/png,image/webp" class="sr-only"
+             onchange="document.getElementById('pic-label').textContent = this.files[0]?.name || 'Click to choose a new photo'" />
+    </div>
+
+    <!-- Save button -->
+    <button type="submit"
+      class="inline-flex items-center gap-2 px-6 py-3 rounded-xl
+             bg-accent hover:bg-accent-hover text-white font-semibold text-sm
+             shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+      Save Changes ✅
+    </button>
+
+  </form>
+
+  <!-- Stats row -->
+  <div class="mt-12 grid grid-cols-2 sm:grid-cols-3 gap-4">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl p-5 text-center shadow-sm border border-slate-100 dark:border-slate-700">
+      <p class="text-3xl font-extrabold text-accent"><%= user.savedActivities?.length || 0 %></p>
+      <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Activities Saved</p>
+    </div>
+    <div class="bg-white dark:bg-slate-800 rounded-2xl p-5 text-center shadow-sm border border-slate-100 dark:border-slate-700">
+      <p class="text-3xl font-extrabold text-accent">0</p>
+      <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">AI Searches</p>
+    </div>
+    <div class="bg-white dark:bg-slate-800 rounded-2xl p-5 text-center shadow-sm border border-slate-100 dark:border-slate-700 col-span-2 sm:col-span-1">
+      <p class="text-3xl font-extrabold text-accent">
+        <%= user.preferences?.interests?.length || 0 %>
+      </p>
+      <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Interests</p>
+    </div>
+  </div>
+
+</div>

@@ -1,19 +1,105 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" data-theme="light">
 <head>
-    <title>Unbored AI</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="UnBored — AI-powered personalized activity recommendations based on your mood, time, budget and interests." />
+  <title><%= typeof title !== 'undefined' ? title : 'UnBored · Stop Scrolling. Start Living.' %></title>
 
-    <link rel="stylesheet" href="/css/style.css">
+  <!-- Google Fonts: Plus Jakarta Sans & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Tailwind CSS CDN (Play CDN — swap for build output in production) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { 
+            sans: ['Inter', 'sans-serif'],
+            jakarta: ['"Plus Jakarta Sans"', 'sans-serif']
+          },
+          colors: {
+            accent: {
+              DEFAULT: '#6366f1',   /* Indigo-500 */
+              hover  : '#4f46e5',   /* Indigo-600 */
+              light  : '#e0e7ff',   /* Indigo-100 */
+            },
+          },
+          borderRadius: { '2xl': '1rem', '3xl': '1.5rem' },
+        },
+      },
+    };
+  </script>
+
+  <!-- Custom styles (fallback + non-Tailwind CSS) -->
+  <link rel="stylesheet" href="/css/style.css" />
 </head>
-<body>
 
-    <%- include("../includes/navbar.ejs") %>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300">
 
-    <main>
-        <%- body %>
-    </main>
+  <!-- ═══════════ NAVBAR ═══════════ -->
+  <%- include('../includes/navbar.ejs') %>
 
-    <%- include("../includes/footer.ejs") %>
+  <!-- ═══════════ FLASH MESSAGES ═══════════ -->
+  <% if (successMsg && successMsg.length > 0) { %>
+    <div id="flash-success" class="fixed top-4 right-4 z-50 flex items-center gap-3 bg-emerald-50 dark:bg-emerald-900/40 border border-emerald-200 dark:border-emerald-700 text-emerald-800 dark:text-emerald-300 px-5 py-3 rounded-2xl shadow-lg animate-fade-in">
+      <span class="text-lg">✅</span>
+      <span class="text-sm font-medium"><%= successMsg[0] %></span>
+      <button onclick="this.parentElement.remove()" class="ml-2 text-emerald-500 hover:text-emerald-700 text-lg leading-none">&times;</button>
+    </div>
+  <% } %>
+
+  <% if (errorMsg && errorMsg.length > 0) { %>
+    <div id="flash-error" class="fixed top-4 right-4 z-50 flex items-center gap-3 bg-red-50 dark:bg-red-900/40 border border-red-200 dark:border-red-700 text-red-800 dark:text-red-300 px-5 py-3 rounded-2xl shadow-lg animate-fade-in">
+      <span class="text-lg">❌</span>
+      <span class="text-sm font-medium"><%= errorMsg[0] %></span>
+      <button onclick="this.parentElement.remove()" class="ml-2 text-red-500 hover:text-red-700 text-lg leading-none">&times;</button>
+    </div>
+  <% } %>
+
+  <!-- ═══════════ MAIN CONTENT ═══════════ -->
+  <main>
+    <%- body %>
+  </main>
+
+  <!-- ═══════════ FOOTER ═══════════ -->
+  <%- include('../includes/footer.ejs') %>
+
+  <!-- ═══════════ DARK MODE SCRIPT ═══════════ -->
+  <script>
+    (function () {
+      // Persist dark mode across sessions
+      const saved = localStorage.getItem('theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const theme = saved || (prefersDark ? 'dark' : 'light');
+      document.documentElement.classList.toggle('dark', theme === 'dark');
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+
+    function toggleDarkMode() {
+      const isDark = document.documentElement.classList.toggle('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    }
+
+    // Auto-dismiss flash messages after 4 seconds
+    setTimeout(() => {
+      ['flash-success', 'flash-error'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+      });
+    }, 4000);
+
+    // Initialize Lucide Icons
+    lucide.createIcons();
+  </script>
 
 </body>
 </html>
