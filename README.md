@@ -31,8 +31,7 @@ UnBored is an AI-powered personalized activity recommendation platform. Feeling 
 ## 📸 Screenshots
 
 
----
 
 ## 📝 License
 
-This project is licensed under the MIT License.
+This project is licensed under VT License.
