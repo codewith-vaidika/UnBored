@@ -5,8 +5,10 @@ const router   = express.Router();
 
 const activityController = require("../controllers/activityController");
 const { ensureAuthenticated } = require("../middleware/ensureAuthenticated");
+const { aiLimiter }           = require("../middleware/rateLimiter");
 
-router.post("/recommend", activityController.getRecommendations);
+// Rate-limited: max 10 AI searches per IP every 5 minutes
+router.post("/recommend", aiLimiter, activityController.getRecommendations);
 
 router.get("/results", activityController.getLastResults);
 

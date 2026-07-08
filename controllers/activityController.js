@@ -1,6 +1,7 @@
 "use strict";
 
 const { getRecommendations }  = require("../services/aiService");
+const cache                   = require("../services/cacheService");
 const SearchHistory           = require("../models/SearchHistory");
 const dashboardController     = require("./dashboardController");
 
@@ -54,13 +55,22 @@ exports.getRecommendations = async (req, res, next) => {
       locationType: searchParams.locationType,
       count       : 5,
     };
-    let activities;
-    try {
-      activities = await getRecommendations(aiParams);
-    } catch (aiErr) {
-      console.error("Gemini API error:", aiErr.message);
-      req.flash("error", aiErr.message || "AI is having trouble right now. Please try again in a moment.");
-      return res.redirect("/dashboard");
+
+    // ── 1. Check cache first ────────────────────────────────
+    let activities = cache.get(aiParams);
+
+    if (!activities) {
+      // ── 2. Cache miss → call Gemini ─────────────────────────
+      try {
+        activities = await getRecommendations(aiParams);
+      } catch (aiErr) {
+        console.error("Gemini API error:", aiErr.message);
+        req.flash("error", aiErr.message || "AI is having trouble right now. Please try again in a moment.");
+        return res.redirect("/dashboard");
+      }
+
+      // ── 3. Store in cache for next time ─────────────────────
+      cache.set(aiParams, activities);
     }
 
     if (req.user) {
