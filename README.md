@@ -28,10 +28,4 @@ UnBored is an AI-powered personalized activity recommendation platform. Feeling 
 - **Image Storage**: Cloudinary (via Multer)`
 
 
-## 📸 Screenshots
-
-
-
-## 📝 License
-
-This project is licensed under VT License.
+This Project is made by Vaidika Thakur.
