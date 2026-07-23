@@ -17,7 +17,8 @@ UnBored is an AI-powered personalized activity recommendation platform. Feeling 
 - **Avatar Uploads**: Users can upload custom profile pictures securely stored via Cloudinary.
 
 ---
-<img width="1920" height="1080" alt="Screenshot (63)" src="https://github.com/user-attachments/assets/7490da5a-59c0-45be-a586-4de3caa0c7f4" />
+<img width="1920" height="1080" alt="Screenshot (64)" src="https://github.com/user-attachments/assets/79ae907e-a425-4afb-98aa-1f0a81355a56" />
+
 
 ## 🛠️ Tech Stack
 
